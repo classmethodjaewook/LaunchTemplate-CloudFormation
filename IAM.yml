@@ -1,4 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
+Description: Create IAM Role
 Resources:
   # IAM Role (SSM)
   SSMIAMRole:
@@ -19,7 +20,6 @@ Resources:
       Path: "/"
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-        - "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
   SSMInstanceProfile:
     Type: "AWS::IAM::InstanceProfile"
     DeletionPolicy: Retain

@@ -157,12 +157,12 @@ Outputs:
   VPC:
     Value: !Ref VPC
     Export:
-      Name: !Sub "VPC"
+      Name: VPC
 
   VPCCIDR:
     Value: !Ref VPCCIDR
     Export:
-      Name: !Sub "VPCCIDR"
+      Name: VPCCIDR
 # Subnet
   PublicSubnetA:
     Value: !Ref PublicSubnetA

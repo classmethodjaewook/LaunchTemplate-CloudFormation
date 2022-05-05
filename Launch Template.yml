@@ -1,4 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
+Description: Create LaunchTemplate & EC2 Instance
 Parameters:
   LinuxLatestAmi:
     Type : AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
