@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  LinuxLatestAmi:
+    Type : AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
+  Ec2InstanceType:
+    Type: String
+    Default: t3.micro
+  KeyPairName:
+    Description: "EC2 Keypair name."
+    Type: AWS::EC2::KeyPair::KeyName
+Resources:
+  MyLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: MyLaunchTemplate
+      LaunchTemplateData:
+        IamInstanceProfile: 
+          Arn:
+            Fn::ImportValue: !Sub SSMInstanceProfile
+        BlockDeviceMappings: 
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeType: gp2
+            VolumeSize: 20
+            DeleteOnTermination: true
+            Encrypted: true
+        DisableApiTermination: true
+        NetworkInterfaces: 
+        - AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          Groups:
+            - Fn::ImportValue: !Sub EC2SecurityGroup1
+          SubnetId: { "Fn::ImportValue": !Sub "PublicSubnetA" }
+        ImageId: !Ref LinuxLatestAmi
+        InstanceType: !Ref Ec2InstanceType
+        KeyName: !Ref KeyPairName
+        UserData: !Base64 | 
+            #!/bin/bash
+            yum update -y
+            yum install httpd-2.4.51 -y
+            systemctl start httpd
+            systemctl enable httpd
+            httpd -v
+            cp /usr/share/httpd/noindex/index.html /var/www/html/index.html
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      LaunchTemplate:
+        LaunchTemplateId: !Ref MyLaunchTemplate
+        Version: !GetAtt MyLaunchTemplate.LatestVersionNumber
+      DisableApiTermination: true
